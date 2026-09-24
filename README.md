@@ -1,7 +1,7 @@
 # lanzou
 
 [![npm](https://img.shields.io/npm/v/lanzou)](https://www.npmjs.com/package/lanzou)
-[![CI](https://github.com/<your-username>/lanzou/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/lanzou/actions/workflows/ci.yml)
+[![CI](https://github.com/Akinohra/lanzou/actions/workflows/ci.yml/badge.svg)](https://github.com/Akinohra/lanzou/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![node](https://img.shields.io/node/v/lanzou)](https://www.npmjs.com/package/lanzou)
 
@@ -131,7 +131,7 @@ npm run example -- <分享链接> [密码]   # 端到端实测
 
 仓库已配置 [Trusted Publishing](https://docs.npmjs.com/generating-provenance-statements/)（OIDC）：
 
-1. npmjs.com → Access Tokens → Trusted Publishers → 添加 ` <你的用户名>/lanzou ` + `release.yml`
+1. npmjs.com → Access Tokens → Trusted Publishers → 添加 `Akinohra/lanzou` + `release.yml`
 2. 修改 `package.json` 的 `version` 并提交
 3. 在 GitHub 创建对应 tag 的 Release，`release.yml` 自动执行 `npm publish --provenance`
 
