@@ -1,0 +1,67 @@
+{
+  "name": "lanzou",
+  "version": "0.1.0",
+  "description": "蓝奏云分享链接解析库：文件列表 + 直链提取，自动处理 acw_sc__v2 WAF 挑战、密码分享、翻页与域名回退",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "example": "tsx examples/demo.ts",
+    "format": "prettier --write .",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "lanzou",
+    "蓝奏云",
+    "lanzouyun",
+    "direct-link",
+    "download",
+    "scraper",
+    "crawler",
+    "acw_sc__v2"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.0"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 120
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "prettier": "^3.9.9",
+    "tsdown": "^0.23.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  }
+}

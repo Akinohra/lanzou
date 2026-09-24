@@ -1,0 +1,29 @@
+# 发布流程：在 GitHub 上创建 Release 时自动发布到 npm
+#
+# 首次使用前，需在 npmjs.com 配置 Trusted Publisher（免 token 的 OIDC 信任发布）：
+#   1. 登录 npmjs.com → 头像 → Access Tokens → Trusted Publishers → Add
+#   2. Repository 填 <你的用户名>/lanzou，Workflow 填 release.yml，Environment 留空
+#   3. 之后每次发 GitHub Release 即自动发布对应 package.json 里的版本
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC 信任发布所需
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm publish --provenance --access public
