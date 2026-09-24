@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680"><style>@font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: local('JetBrains Mono'), local('JetBrainsMono-Regular'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: local('JetBrains Mono'), local('JetBrainsMono-Regular'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 600; src: local('JetBrains Mono'), local('JetBrainsMono-Regular'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: local('JetBrains Mono'), local('JetBrainsMono-Regular'); }
+svg { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+.c-grid       { stroke: var(--grid); fill: none; }
+    .c-mask       { fill: var(--mask); stroke: none; }
+    .c-frontend   { fill: var(--frontend-fill);   stroke: var(--frontend-stroke); }
+    .c-backend    { fill: var(--backend-fill);    stroke: var(--backend-stroke); }
+    .c-database   { fill: var(--database-fill);   stroke: var(--database-stroke); }
+    .c-cloud      { fill: var(--cloud-fill);      stroke: var(--cloud-stroke); }
+    .c-security   { fill: var(--security-fill);   stroke: var(--security-stroke); }
+    .c-messagebus { fill: var(--messagebus-fill); stroke: var(--messagebus-stroke); }
+    .c-external   { fill: var(--external-fill);   stroke: var(--external-stroke); }
+    .t-primary { fill: var(--text); }
+    .t-muted   { fill: var(--text-muted); }
+    .t-dim     { fill: var(--text-dim); }
+    .t-frontend   { fill: var(--frontend-stroke); }
+    .t-backend    { fill: var(--backend-stroke); }
+    .t-database   { fill: var(--database-stroke); }
+    .t-cloud      { fill: var(--cloud-stroke); }
+    .t-security   { fill: var(--security-stroke); }
+    .t-messagebus { fill: var(--messagebus-stroke); }
+    .t-external   { fill: var(--external-stroke); }
+    .a-default   { stroke: var(--arrow); fill: none; }
+    .a-emphasis  { stroke: var(--arrow-emphasis); fill: none; }
+    .a-security  { stroke: var(--security-stroke); fill: none; stroke-dasharray: 5,5; }
+    .a-dashed    { stroke: var(--database-stroke); fill: none; stroke-dasharray: 4,4; }
+    .m-default   { fill: var(--arrow); }
+    .m-emphasis  { fill: var(--arrow-emphasis); }
+    .m-security  { fill: var(--security-stroke); }
+    .m-dashed    { fill: var(--database-stroke); }
+    .c-security-group { fill: transparent; stroke: var(--security-stroke); stroke-dasharray: 4,4; }
+    .c-region         { fill: rgba(251, 191, 36, 0.05); stroke: var(--cloud-stroke); stroke-dasharray: 8,4; }
+    .c-lane           { fill: var(--lane-fill); stroke: var(--lane-stroke); stroke-dasharray: 6,6; }
+:root, svg { --bg: #020617; --grid: #1e293b; --text: #ffffff; --text-muted: #94a3b8; --text-dim: #475569; --arrow: #64748b; --arrow-emphasis: #34d399; --mask: #0f172a; --frontend-fill: rgba(8, 51, 68, 0.4); --frontend-stroke: #22d3ee; --backend-fill: rgba(6, 78, 59, 0.4); --backend-stroke: #34d399; --database-fill: rgba(76, 29, 149, 0.4); --database-stroke: #a78bfa; --cloud-fill: rgba(120, 53, 15, 0.3); --cloud-stroke: #fbbf24; --security-fill: rgba(136, 19, 55, 0.4); --security-stroke: #fb7185; --messagebus-fill: rgba(251, 146, 60, 0.3); --messagebus-stroke: #fb923c; --external-fill: rgba(30, 41, 59, 0.5); --external-stroke: #94a3b8; }
+@media (prefers-color-scheme: light) { :root, svg { --bg: #f8fafc; --grid: #e2e8f0; --text: #0f172a; --text-muted: #64748b; --text-dim: #94a3b8; --arrow: #94a3b8; --arrow-emphasis: #059669; --mask: #ffffff; --frontend-fill: rgba(34, 211, 238, 0.15); --frontend-stroke: #0891b2; --backend-fill: rgba(52, 211, 153, 0.18); --backend-stroke: #059669; --database-fill: rgba(167, 139, 250, 0.2); --database-stroke: #7c3aed; --cloud-fill: rgba(251, 191, 36, 0.18); --cloud-stroke: #d97706; --security-fill: rgba(251, 113, 133, 0.15); --security-stroke: #e11d48; --messagebus-fill: rgba(251, 146, 60, 0.15); --messagebus-stroke: #ea580c; --external-fill: rgba(148, 163, 184, 0.18); --external-stroke: #64748b; } }
+svg[data-theme="light"] { --bg: #f8fafc; --grid: #e2e8f0; --text: #0f172a; --text-muted: #64748b; --text-dim: #94a3b8; --arrow: #94a3b8; --arrow-emphasis: #059669; --mask: #ffffff; --frontend-fill: rgba(34, 211, 238, 0.15); --frontend-stroke: #0891b2; --backend-fill: rgba(52, 211, 153, 0.18); --backend-stroke: #059669; --database-fill: rgba(167, 139, 250, 0.2); --database-stroke: #7c3aed; --cloud-fill: rgba(251, 191, 36, 0.18); --cloud-stroke: #d97706; --security-fill: rgba(251, 113, 133, 0.15); --security-stroke: #e11d48; --messagebus-fill: rgba(251, 146, 60, 0.15); --messagebus-stroke: #ea580c; --external-fill: rgba(148, 163, 184, 0.18); --external-stroke: #64748b; }
+svg[data-theme="dark"] { --bg: #020617; --grid: #1e293b; --text: #ffffff; --text-muted: #94a3b8; --text-dim: #475569; --arrow: #64748b; --arrow-emphasis: #34d399; --mask: #0f172a; --frontend-fill: rgba(8, 51, 68, 0.4); --frontend-stroke: #22d3ee; --backend-fill: rgba(6, 78, 59, 0.4); --backend-stroke: #34d399; --database-fill: rgba(76, 29, 149, 0.4); --database-stroke: #a78bfa; --cloud-fill: rgba(120, 53, 15, 0.3); --cloud-stroke: #fbbf24; --security-fill: rgba(136, 19, 55, 0.4); --security-stroke: #fb7185; --messagebus-fill: rgba(251, 146, 60, 0.3); --messagebus-stroke: #fb923c; --external-fill: rgba(30, 41, 59, 0.5); --external-stroke: #94a3b8; }
+rect.c-bg-rect { fill: var(--bg); }
+</style><rect width="100%" height="100%" class="c-bg-rect"/>
+        <!-- Definitions -->
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-default" />
+          </marker>
+          <marker id="arrowhead-emphasis" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-emphasis" />
+          </marker>
+          <marker id="arrowhead-security" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-security" />
+          </marker>
+          <marker id="arrowhead-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" class="m-dashed" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" class="c-grid" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- Background Grid -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ============ ARROWS (drawn before boxes so they sit behind) ============ -->
+
+        <!-- 调用方 -> API 层 -->
+        <path d="M 145 275 L 158 275 L 158 112 L 186 112" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- API 层 -> 流程层 -->
+        <line x1="265" y1="140" x2="265" y2="197" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="425" y1="140" x2="425" y2="197" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 355 125 L 370 125 L 370 163 L 295 163 L 295 197" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- 列表 -> 直链（逐文件） -->
+        <line x1="400" y1="237" x2="416" y2="237" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- 流程层 -> httpSend -->
+        <line x1="295" y1="275" x2="295" y2="337" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 555 275 L 555 296 L 410 296 L 410 337" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- getAllFileList -> filemoreajax（下方走廊绕行） -->
+        <path d="M 380 275 L 380 310 L 730 310 L 730 225 L 756 225" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- getFinalLink -> 文件页（上方走廊绕行） -->
+        <path d="M 555 200 L 555 172 L 745 172 L 745 355 L 756 355" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- httpSend -> 蓝奏云（HTTPS 传输） -->
+        <line x1="690" y1="370" x2="756" y2="370" class="a-emphasis" stroke-width="1.5" marker-end="url(#arrowhead-emphasis)"/>
+        <text x="723" y="362" class="t-muted" font-size="7" text-anchor="middle">HTTPS</text>
+
+        <!-- httpSend -> rateLimit / CookieJar -->
+        <line x1="265" y1="400" x2="265" y2="442" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <line x1="420" y1="400" x2="420" y2="442" class="a-dashed" stroke-width="1" marker-end="url(#arrowhead-dashed)"/>
+        <text x="432" y="424" class="t-muted" font-size="7">Cookie</text>
+
+        <!-- calcAcwScV2 -> CookieJar（写入挑战答案） -->
+        <path d="M 615 445 L 615 425 L 445 425 L 445 442" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <text x="530" y="418" class="t-security" font-size="7" text-anchor="middle">写入 acw_sc__v2</text>
+
+        <!-- WAF 挑战页 -> calcAcwScV2 -->
+        <line x1="758" y1="482" x2="698" y2="482" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <text x="728" y="475" class="t-security" font-size="7" text-anchor="middle">arg1</text>
+
+        <!-- ============ 调用方 ============ -->
+        <rect x="30" y="255" width="115" height="70" rx="6" class="c-mask"/>
+        <rect x="30" y="255" width="115" height="70" rx="6" class="c-external" stroke-width="1.5"/>
+        <text x="87" y="278" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">调用方代码</text>
+        <text x="87" y="296" class="t-muted" font-size="9" text-anchor="middle">Node.js &ge; 18</text>
+        <text x="87" y="312" class="t-muted" font-size="8" text-anchor="middle">ESM / CJS</text>
+
+        <!-- ============ lanzou 库边界 ============ -->
+        <rect x="170" y="40" width="540" height="540" rx="12" class="c-region" stroke-width="1"/>
+        <text x="182" y="58" class="t-cloud" font-size="10" font-weight="600">lanzou 库 · src/index.ts</text>
+
+        <!-- API 层 -->
+        <rect x="190" y="85" width="150" height="55" rx="6" class="c-mask"/>
+        <rect x="190" y="85" width="150" height="55" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="265" y="107" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">getLanzouFiles</text>
+        <text x="265" y="124" class="t-muted" font-size="9" text-anchor="middle">全部文件直链</text>
+
+        <rect x="355" y="85" width="140" height="55" rx="6" class="c-mask"/>
+        <rect x="355" y="85" width="140" height="55" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="425" y="107" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">getLatestFile</text>
+        <text x="425" y="124" class="t-muted" font-size="9" text-anchor="middle">仅最新文件</text>
+
+        <rect x="510" y="85" width="180" height="55" rx="6" class="c-mask"/>
+        <rect x="510" y="85" width="180" height="55" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="600" y="107" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">checkLanzouUrl</text>
+        <text x="600" y="124" class="t-muted" font-size="9" text-anchor="middle">链接校验 · 不发请求</text>
+
+        <!-- 流程层 -->
+        <rect x="190" y="200" width="210" height="75" rx="6" class="c-mask"/>
+        <rect x="190" y="200" width="210" height="75" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="295" y="222" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">getAllFileList</text>
+        <text x="295" y="240" class="t-muted" font-size="8" text-anchor="middle">prepareData · extractParam</text>
+        <text x="295" y="256" class="t-muted" font-size="8" text-anchor="middle">翻页 · 单页重试 &times;4</text>
+
+        <rect x="420" y="200" width="270" height="75" rx="6" class="c-mask"/>
+        <rect x="420" y="200" width="270" height="75" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="555" y="222" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">getFinalLink</text>
+        <text x="555" y="240" class="t-muted" font-size="8" text-anchor="middle">processDownloadPage</text>
+        <text x="555" y="256" class="t-muted" font-size="8" text-anchor="middle">downurl &rarr; vkjxld/hyggid &rarr; 直链</text>
+
+        <!-- HTTP 层 -->
+        <rect x="190" y="340" width="500" height="60" rx="6" class="c-mask"/>
+        <rect x="190" y="340" width="500" height="60" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="440" y="365" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">httpSend · axios</text>
+        <text x="440" y="383" class="t-muted" font-size="9" text-anchor="middle">UA 伪装 · Referer · 超时 15s · WAF 挑战自动重试 &le;3</text>
+
+        <!-- 基础组件层 -->
+        <rect x="190" y="445" width="150" height="75" rx="6" class="c-mask"/>
+        <rect x="190" y="445" width="150" height="75" rx="6" class="c-backend" stroke-width="1.5"/>
+        <text x="265" y="470" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">rateLimit</text>
+        <text x="265" y="488" class="t-muted" font-size="8" text-anchor="middle">全局 1s/请求</text>
+        <text x="265" y="504" class="t-muted" font-size="8" text-anchor="middle">进程内共享</text>
+
+        <rect x="355" y="445" width="150" height="75" rx="6" class="c-mask"/>
+        <rect x="355" y="445" width="150" height="75" rx="6" class="c-database" stroke-width="1.5"/>
+        <text x="430" y="470" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">CookieJar</text>
+        <text x="430" y="488" class="t-muted" font-size="8" text-anchor="middle">按域名存储 Cookie</text>
+        <text x="430" y="504" class="t-muted" font-size="8" text-anchor="middle">跨请求复用 WAF 状态</text>
+
+        <rect x="540" y="445" width="150" height="75" rx="6" class="c-mask"/>
+        <rect x="540" y="445" width="150" height="75" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="615" y="470" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">calcAcwScV2</text>
+        <text x="615" y="488" class="t-muted" font-size="8" text-anchor="middle">本地计算挑战答案</text>
+        <text x="615" y="504" class="t-muted" font-size="8" text-anchor="middle">不执行远端 JS</text>
+
+        <!-- ============ 蓝奏云站点边界 ============ -->
+        <rect x="740" y="40" width="230" height="540" rx="12" class="c-region" stroke-width="1"/>
+        <text x="752" y="58" class="t-cloud" font-size="10" font-weight="600">蓝奏云站点（外部）</text>
+
+        <rect x="760" y="90" width="190" height="65" rx="6" class="c-mask"/>
+        <rect x="760" y="90" width="190" height="65" rx="6" class="c-cloud" stroke-width="1.5"/>
+        <text x="855" y="113" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">分享页 HTML</text>
+        <text x="855" y="131" class="t-muted" font-size="8" text-anchor="middle">prepareData 提取参数</text>
+        <text x="855" y="147" class="t-muted" font-size="8" text-anchor="middle">fid · t · k · pwd</text>
+
+        <rect x="760" y="190" width="190" height="70" rx="6" class="c-mask"/>
+        <rect x="760" y="190" width="190" height="70" rx="6" class="c-cloud" stroke-width="1.5"/>
+        <text x="855" y="213" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">filemoreajax.php</text>
+        <text x="855" y="231" class="t-muted" font-size="8" text-anchor="middle">文件列表 JSON · zt</text>
+        <text x="855" y="247" class="t-muted" font-size="8" text-anchor="middle">兜底域名池 &times;3</text>
+
+        <rect x="760" y="315" width="190" height="80" rx="6" class="c-mask"/>
+        <rect x="760" y="315" width="190" height="80" rx="6" class="c-cloud" stroke-width="1.5"/>
+        <text x="855" y="340" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">文件页 &rarr; 跳转页</text>
+        <text x="855" y="358" class="t-muted" font-size="8" text-anchor="middle">downurl</text>
+        <text x="855" y="374" class="t-muted" font-size="8" text-anchor="middle">vkjxld + hyggid</text>
+
+        <rect x="760" y="435" width="190" height="65" rx="6" class="c-mask"/>
+        <rect x="760" y="435" width="190" height="65" rx="6" class="c-security" stroke-width="1.5"/>
+        <text x="855" y="460" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">WAF 挑战页</text>
+        <text x="855" y="478" class="t-muted" font-size="8" text-anchor="middle">acw_sc__v2 · arg1</text>
+
+        <!-- ============ LEGEND（边界外） ============ -->
+        <rect x="30" y="615" width="16" height="10" rx="2" class="c-external" stroke-width="1"/>
+        <text x="52" y="624" class="t-muted" font-size="8">调用方</text>
+
+        <rect x="105" y="615" width="16" height="10" rx="2" class="c-backend" stroke-width="1"/>
+        <text x="127" y="624" class="t-muted" font-size="8">库组件</text>
+
+        <rect x="180" y="615" width="16" height="10" rx="2" class="c-cloud" stroke-width="1"/>
+        <text x="202" y="624" class="t-muted" font-size="8">蓝奏云站点</text>
+
+        <rect x="275" y="615" width="16" height="10" rx="2" class="c-security" stroke-width="1"/>
+        <text x="297" y="624" class="t-muted" font-size="8">WAF / 安全</text>
+
+        <line x1="365" y1="620" x2="385" y2="620" class="a-dashed" stroke-width="1" marker-end="url(#arrowhead-dashed)"/>
+        <text x="391" y="624" class="t-muted" font-size="8">Cookie 读写</text>
+
+        <line x1="470" y1="620" x2="490" y2="620" class="a-security" stroke-width="1" marker-end="url(#arrowhead-security)"/>
+        <text x="496" y="624" class="t-muted" font-size="8">挑战应答</text>
+
+        <line x1="570" y1="620" x2="590" y2="620" class="a-emphasis" stroke-width="1" marker-end="url(#arrowhead-emphasis)"/>
+        <text x="596" y="624" class="t-muted" font-size="8">HTTPS 请求</text>
+      </svg>

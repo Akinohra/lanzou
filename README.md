@@ -18,6 +18,12 @@
 - **内置限速** — 相邻请求间隔至少 1 秒，降低触发风控的概率
 - **零异常抛出** — 主 API 永不 throw，失败信息通过返回值传递
 
+## 架构
+
+![lanzou 架构图](docs/architecture.svg)
+
+> 图表随浏览器/系统自动切换深浅色 · [交互版（主题切换 / 导出 PNG/SVG）](docs/architecture.html)
+
 ## 安装
 
 ```sh
