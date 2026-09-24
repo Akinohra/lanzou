@@ -1,6 +1,6 @@
 {
   "name": "lanzou",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "蓝奏云分享链接解析库：文件列表 + 直链提取，自动处理 acw_sc__v2 WAF 挑战、密码分享、翻页与域名回退",
   "type": "module",
   "main": "./dist/index.cjs",
