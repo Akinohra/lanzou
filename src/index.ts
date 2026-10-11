@@ -85,19 +85,18 @@ const isAcwChallenge = (html: string) => html.includes('acw_sc__v2') && html.inc
 
 /** acw_sc__v2算法的固定参数：40位重排表与异或密钥 */
 const ACW_POS = [
-  15, 35, 29, 24, 33, 16, 1, 38, 10, 9, 19, 31, 40, 27, 22, 23, 25, 13, 6, 11, 39, 18, 20, 8, 14, 21, 32, 26, 2, 30, 7, 4,
-  17, 5, 3, 28, 34, 37, 12, 36,
+  15, 35, 29, 24, 33, 16, 1, 38, 10, 9, 19, 31, 40, 27, 22, 23, 25, 13, 6, 11, 39, 18, 20, 8, 14, 21, 32, 26, 2, 30, 7,
+  4, 17, 5, 3, 28, 34, 37, 12, 36,
 ]
 const ACW_KEY = '3000176000856006061501533003690027800375'
 
-/** 本地计算acw_sc__v2：按固定表重排arg1(40位hex)，再与密钥逐字节异或 */
-export const calcAcwScV2 = (arg1: string): string => {
-  const mixed = ACW_POS.map((pos) => arg1[pos - 1]).join('')
+/** 本地计算acw_sc__v2：按重排表（默认固定表，挑战页带动态表时用动态表）重排arg1(40位hex)，再与密钥逐字节异或 */
+export const calcAcwScV2 = (arg1: string, pos: number[] = ACW_POS): string => {
+  const mixed = pos.map((p) => arg1[p - 1]).join('')
   return mixed
     .match(/../g)!
-    .map(
-      (pair, i) =>
-        (parseInt(pair, 16) ^ parseInt(ACW_KEY.slice(i * 2, i * 2 + 2), 16)).toString(16).padStart(2, '0'),
+    .map((pair, i) =>
+      (parseInt(pair, 16) ^ parseInt(ACW_KEY.slice(i * 2, i * 2 + 2), 16)).toString(16).padStart(2, '0'),
     )
     .join('')
 }
@@ -106,7 +105,12 @@ export const calcAcwScV2 = (arg1: string): string => {
 const solveAcwChallenge = (html: string, url: string): boolean => {
   const arg1 = html.match(/arg1\s*=\s*['"]([0-9A-Fa-f]{40})['"]/)?.[1]
   if (!arg1) return false
-  cookieJar.set(new URL(url).hostname, 'acw_sc__v2', calcAcwScV2(arg1))
+  // 部分挑战页自带动态重排表（var _0x..=[..],_0x..=），优先使用，无表或缺表（非40项）回退固定表
+  const orderRaw = html.match(/var\s+\w+\s*=\s*\[((?:\s*(?:0x[\da-f]+|\d+)\s*,?)+)\]\s*,\s*\w+\s*=/i)?.[1]
+  const order = orderRaw
+    ? orderRaw.match(/0x[\da-f]+|\d+/gi)!.map((n) => (n.slice(0, 2).toLowerCase() === '0x' ? parseInt(n, 16) : +n))
+    : []
+  cookieJar.set(new URL(url).hostname, 'acw_sc__v2', calcAcwScV2(arg1, order.length === 40 ? order : ACW_POS))
   return true
 }
 
@@ -138,7 +142,13 @@ const httpSend = async (
 ): Promise<any> => {
   let body: any = ''
   for (let attempt = 0; attempt < 3; attempt++) {
-    const response = await axios.request({ method, url, data, headers: buildHeaders(url, referer), timeout: ctx.timeout })
+    const response = await axios.request({
+      method,
+      url,
+      data,
+      headers: buildHeaders(url, referer),
+      timeout: ctx.timeout,
+    })
     cookieJar.addFromResponse(response.headers['set-cookie'], url)
     body = response.data
     if (typeof body !== 'string' || !isAcwChallenge(body)) return body
@@ -206,13 +216,23 @@ interface LanzouFileData {
 }
 
 /** 请求单页文件列表：zt=1返回文件，zt=2返回[]，其他情况返回null（由调用方重试） */
-const fetchFilePage = async (data: Record<string, string>, pg: number, host: string, ctx: Ctx): Promise<LanzouFileData[] | null> => {
+const fetchFilePage = async (
+  data: Record<string, string>,
+  pg: number,
+  host: string,
+  ctx: Ctx,
+): Promise<LanzouFileData[] | null> => {
   const hosts = FALLBACK_HOSTS.includes(host) ? FALLBACK_HOSTS : [host, ...FALLBACK_HOSTS]
 
   for (const h of hosts) {
     try {
       ctx.log(`请求文件列表 第${pg}页 @ ${h}`)
-      const result = await httpSend('post', `https://${h}/filemoreajax.php`, ctx, new URLSearchParams({ ...data, pg: String(pg) }))
+      const result = await httpSend(
+        'post',
+        `https://${h}/filemoreajax.php`,
+        ctx,
+        new URLSearchParams({ ...data, pg: String(pg) }),
+      )
 
       if (!result || typeof result.zt === 'undefined') continue // 响应无效，换下一个域名
       if (result.zt === 1) return result.text
@@ -226,7 +246,7 @@ const fetchFilePage = async (data: Record<string, string>, pg: number, host: str
   return null
 }
 
-/** 翻页获取全部文件，单页失败最多重试4次 */
+/** 翻页获取全部文件，单页失败最多重试4次（zt=4频率限制按次递增退避） */
 const getAllFileList = async (url: string, pwd: string, ctx: Ctx): Promise<LanzouFileData[]> => {
   const data = await prepareData(url, pwd, ctx)
   const host = new URL(url).host
@@ -235,6 +255,7 @@ const getAllFileList = async (url: string, pwd: string, ctx: Ctx): Promise<Lanzo
   for (let pg = 1; ; pg++) {
     let page: LanzouFileData[] | null = null
     for (let retry = 0; retry < 4 && page === null; retry++) {
+      if (retry > 0) await new Promise((resolve) => setTimeout(resolve, retry * 2000))
       await rateLimit()
       page = await fetchFilePage(data, pg, host, ctx)
     }
@@ -246,29 +267,89 @@ const getAllFileList = async (url: string, pwd: string, ctx: Ctx): Promise<Lanzo
 
 // ===== 直链提取 =====
 
-/** 处理下载跳转页，提取最终直链 */
+/** 解码JS字符串字面量：\uXXXX、\/ 与 \' \" \\；`@internal` */
+export const decodeJsString = (raw: string): string =>
+  raw
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/\\\//g, '/')
+    .replace(/\\(['"\\])/g, '$1')
+
+/** 提取页面中某JS变量的全部字符串赋值（var/let/const或裸赋值均可），按出现顺序返回解码后的值；`@internal` */
+export const jsVarAssignments = (html: string, name: string): string[] => {
+  const re = new RegExp(`(?<![\\w$.])(?:(?:var|let|const)\\s+)?${name}\\s*=\\s*(['"])((?:\\\\.|(?!\\1)[^])*)\\1`, 'g')
+  return [...html.matchAll(re)].map((m) => decodeJsString(m[2]!))
+}
+
+/**
+ * 新版页面直链提取：页面脚本把直链拆成 vkjxld(域名路径)+hyggid(查询串)，可选 lanosso 后缀，
+ * 拼接即最终下载直链。多次赋值时浏览器以最后一次为准（killdns2 存在时会覆盖备用域名），故取末次赋值。
+ *
+ * `@internal`，测试与高级用途。
+ */
+export const extractScriptDirectUrl = (html: string): string | null => {
+  const bases = jsVarAssignments(html, 'vkjxld')
+  const queries = jsVarAssignments(html, 'hyggid')
+  const base = bases[bases.length - 1]
+  const query = queries[queries.length - 1]
+  if (!base || !query || !/^https?:\/\//i.test(base)) return null
+  const lanosso = jsVarAssignments(html, 'lanosso').find(Boolean) ?? ''
+  const url = base + query + lanosso
+  return /^https?:\/\//i.test(url) ? url : null
+}
+
+/**
+ * 脚本拼出的链接(vkjxld+hyggid)有时直接是文件直链，有时是CDN加载页（HTML内再location.href跳一次真直链）。
+ * 流式取前几KB判别：非HTML即直链原样返回（跟随重定向后的最终地址）；HTML则提取其中的跳转地址。
+ */
+const resolveLoadingPage = async (url: string, referer: string, ctx: Ctx): Promise<string> => {
+  await rateLimit()
+  const response = await axios.request({
+    method: 'get',
+    url,
+    headers: {
+      ...buildHeaders(url, referer),
+      Range: 'bytes=0-4095',
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    },
+    timeout: ctx.timeout,
+    responseType: 'stream',
+  })
+  const contentType = String(response.headers['content-type'] ?? '')
+  const finalUrl: string = response.request?.res?.responseUrl ?? url
+  if (!/text\/html/i.test(contentType)) {
+    response.data.destroy()
+    return finalUrl
+  }
+  // 最多读4KB即可覆盖加载页（其体积仅2~3KB），随后立即断开
+  const chunks: Buffer[] = []
+  let size = 0
+  for await (const chunk of response.data as NodeJS.ReadableStream) {
+    chunks.push(chunk as Buffer)
+    size += (chunk as Buffer).length
+    if (size >= 4096) break
+  }
+  response.data.destroy()
+  const html = Buffer.concat(chunks).toString('utf8')
+  const next =
+    html.match(/location\.(?:href\s*=|replace\()\s*["']([^"']+)["']/)?.[1] ??
+    html.match(/<meta[^>]+http-equiv=["']?refresh["']?[^>]+url=([^"'>\s]+)/i)?.[1]
+  return next ? (/^https?:\/\//i.test(next) ? next : new URL(next, url).href) : finalUrl
+}
+
+/** 处理下载跳转页(/tp/中转页等)，提取最终直链 */
 const processDownloadPage = async (tp: string, host: string, filePageUrl: string, ctx: Ctx): Promise<string> => {
   const tpUrl = /^https?:\/\//i.test(tp) ? tp : `https://${host}${tp}`
   const tpHtml = await httpGetText(tpUrl, ctx, filePageUrl)
 
-  // 依次尝试：vkjxld+hyggid拼接 → 含/file/的JS变量 → iframe
-  const vkjxld = tpHtml.match(/var\s+vkjxld\s*=\s*'([^']+)'/)?.[1]
-  const hyggid = tpHtml.match(/var\s+hyggid\s*=\s*'([^']+)'/)?.[1]
-  const found = (vkjxld && hyggid ? vkjxld + hyggid : null)
-    ?? tpHtml.match(/var\s+\w+\s*=\s*'(https?:\/\/[^']+\/file\/[^']*)'/)?.[1]
-    ?? tpHtml.match(/<iframe[^>]+src="([^"]+)"/)?.[1]
-  if (!found) throw new Error('无法从下载页提取跳转参数(vkjxld/hyggid)')
-  const finalPageUrl = /^https?:\/\//i.test(found) ? found : new URL(found, tpUrl).href
-
-  ctx.log(`获取最终下载页: ${finalPageUrl}`)
-  const finalHtml = await httpGetText(finalPageUrl, ctx, tpUrl)
-
-  // 依次尝试：JS跳转 → a标签 → download链接
-  const link = finalHtml.match(/location\.(?:href\s*=|replace\()\s*["']([^"']+)["']/)?.[1]
-    ?? finalHtml.match(/<a\s+href="(https?:\/\/[^"]+)"/)?.[1]
-    ?? finalHtml.match(/href="(https?:\/\/[^"]+download[^"]*)"/i)?.[1]
-  if (!link) throw new Error('最终页面未找到下载直链')
-  return /^https?:\/\//i.test(link) ? link : new URL(link, finalPageUrl).href
+  // 新版：vkjxld+hyggid拼出候选直链，需判别是否CDN加载页；旧版兜底：含/file/的JS变量 → JS跳转 → iframe
+  const direct = extractScriptDirectUrl(tpHtml)
+  if (direct) return resolveLoadingPage(direct, tpUrl, ctx)
+  const link =
+    tpHtml.match(/var\s+\w+\s*=\s*'(https?:\/\/[^']+\/file\/[^']*)'/)?.[1] ??
+    tpHtml.match(/location\.(?:href\s*=|replace\()\s*["']([^"']+)["']/)?.[1] ??
+    tpHtml.match(/<iframe[^>]+src="([^"]+)"/)?.[1]
+  if (!link) throw new Error('下载页未找到直链(vkjxld/hyggid)，页面可能需要密码或结构已变更')
+  return /^https?:\/\//i.test(link) ? link : new URL(link, tpUrl).href
 }
 
 /** 获取单个文件的最终下载链接，失败抛出异常 */
@@ -277,13 +358,19 @@ const getFinalLink = async (id: string, host: string, ctx: Ctx, referer?: string
   const html = await httpGetText(filePageUrl, ctx, referer)
   if (isAcwChallenge(html)) throw new Error('文件页被WAF拦截且挑战破解失败')
 
-  const tp = html.match(/<a[^>]+href="([^"]+)"[^>]*id="downurl"/)?.[1]
-    ?? html.match(/<a[^>]+id="downurl"[^>]+href="([^"]+)"/)?.[1]
-    ?? html.match(/<iframe[^>]+src="([^"]+)"/)?.[1]
-  if (!tp) throw new Error('文件页未找到下载入口(downurl)，页面可能需要密码或结构已变更')
+  // 新版页面：直链由脚本拼出（vkjxld+hyggid），优先于锚点——锚点初始是"/#文件ID"占位，后续才被JS改写；结果需判别是否CDN加载页
+  const direct = extractScriptDirectUrl(html)
+  if (direct) return resolveLoadingPage(direct, filePageUrl, ctx)
+
+  // 中转页地址依次尝试：脚本赋值(link/submit.href，新版真实/tp/地址) → ddown/downurl锚点 → iframe
+  const tp =
+    html.match(/\b(?:link|submit)\.href\s*=\s*(['"])(.*?)\1/s)?.[2] ??
+    html.match(/<a\b(?=[^>]*\bid=["'](?:downurl|ddown)["'])(?=[^>]*\bhref=["']([^"']+)["'])[^>]*>/i)?.[1] ??
+    html.match(/<iframe[^>]+src="([^"]+)"/)?.[1]
+  if (!tp || tp.startsWith('/#')) throw new Error('文件页未找到下载入口(ddown/downurl)，页面可能需要密码或结构已变更')
 
   ctx.log(`文件 ${id} 跳转链接: ${tp}`)
-  return processDownloadPage(tp, host, filePageUrl, ctx)
+  return processDownloadPage(decodeJsString(tp), host, filePageUrl, ctx)
 }
 
 // ===== 时间解析 =====

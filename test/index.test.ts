@@ -5,7 +5,10 @@ import {
   absTime,
   calcAcwScV2,
   checkLanzouUrl,
+  decodeJsString,
   extractParam,
+  extractScriptDirectUrl,
+  jsVarAssignments,
   parseSiteTime,
   resetCookies,
 } from '../src'
@@ -24,6 +27,20 @@ describe('calcAcwScV2', () => {
     const out = calcAcwScV2('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
     expect(out).toMatch(/^[0-9a-f]{40}$/)
     expect(calcAcwScV2('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')).toBe(out)
+  })
+
+  it('支持挑战页动态重排表：恒等表时输出为arg1与密钥逐字节异或', () => {
+    // pos=[1..40]时mixed=arg1本身，0xFF异或密钥各字节
+    const identity = Array.from({ length: 40 }, (_, i) => i + 1)
+    expect(calcAcwScV2('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', identity)).toBe(
+      'cfffe89fff7a9ff9f9eafeaccffc96ffd87ffc8a',
+    )
+  })
+
+  it('动态表生效：与默认固定表输出不同', () => {
+    const identity = Array.from({ length: 40 }, (_, i) => i + 1)
+    const arg1 = '0123456789ABCDEF0123456789ABCDEF01234567'
+    expect(calcAcwScV2(arg1, identity)).not.toBe(calcAcwScV2(arg1))
   })
 })
 
@@ -153,6 +170,64 @@ describe('extractParam', () => {
 
   it('缺失时返回null', () => {
     expect(extractParam('<html></html>', 'fid')).toBeNull()
+  })
+})
+
+describe('decodeJsString', () => {
+  it('解码\\uXXXX转义', () => {
+    expect(decodeJsString('\\u4e2d\\u6587')).toBe('中文')
+  })
+
+  it('解码\\/与引号、反斜杠转义', () => {
+    expect(decodeJsString('a\\/b')).toBe('a/b')
+    expect(decodeJsString("it\\'s")).toBe("it's")
+    expect(decodeJsString('a\\\\b')).toBe('a\\b')
+  })
+})
+
+describe('jsVarAssignments', () => {
+  it('按出现顺序提取var/let/const与裸赋值', () => {
+    const html = `var vkjxld = 'https://a.example.com/'; let x = 1; vkjxld = 'https://b.example.com/'`
+    expect(jsVarAssignments(html, 'vkjxld')).toEqual(['https://a.example.com/', 'https://b.example.com/'])
+  })
+
+  it('忽略属性赋值与更长变量名', () => {
+    const html = `obj.vkjxld = 'ignored'; var vkjxld2 = 'ignored'; var vkjxld = 'kept'`
+    expect(jsVarAssignments(html, 'vkjxld')).toEqual(['kept'])
+  })
+
+  it('解码赋值中的JS转义序列', () => {
+    const html = `const hyggid = '?x\\u003d1\\/c'`
+    expect(jsVarAssignments(html, 'hyggid')).toEqual(['?x=1/c'])
+  })
+
+  it('双引号赋值与无赋值', () => {
+    expect(jsVarAssignments(`var lanosso = ""`, 'lanosso')).toEqual([''])
+    expect(jsVarAssignments('<html></html>', 'vkjxld')).toEqual([])
+  })
+})
+
+describe('extractScriptDirectUrl', () => {
+  it('拼接vkjxld+hyggid，多次赋值取末次（killdns2覆盖备用域名场景）', () => {
+    const html = [
+      `var vkjxld = 'https://first.example.com/file/'`,
+      `var hyggid = '?a=1'`,
+      `var killdns2 = 'x'`,
+      `var vkjxld = 'https://second.example.com/file/'`,
+    ].join('\n')
+    expect(extractScriptDirectUrl(html)).toBe('https://second.example.com/file/?a=1')
+  })
+
+  it('lanosso存在时拼接为后缀，空值忽略', () => {
+    const base = `var vkjxld = 'https://cdn.example.com/file/'; var hyggid = '?a=1'`
+    expect(extractScriptDirectUrl(`${base}; var lanosso = '&ls=1'`)).toBe('https://cdn.example.com/file/?a=1&ls=1')
+    expect(extractScriptDirectUrl(`${base}; var lanosso = ''`)).toBe('https://cdn.example.com/file/?a=1')
+  })
+
+  it('base为相对路径或任一变量缺失时返回null', () => {
+    expect(extractScriptDirectUrl(`var vkjxld = '/file/'; var hyggid = '?a=1'`)).toBeNull()
+    expect(extractScriptDirectUrl(`var vkjxld = 'https://cdn.example.com/file/'`)).toBeNull()
+    expect(extractScriptDirectUrl('<html></html>')).toBeNull()
   })
 })
 

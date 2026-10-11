@@ -9,11 +9,11 @@
 
 ## 特性
 
-- **全自动 WAF 破解** — 命中 `acw_sc__v2` 反爬挑战页时本地计算通过验证，不执行远端 JS（无 vm 逃逸风险）
+- **全自动 WAF 破解** — 命中 `acw_sc__v2` 反爬挑战页时本地计算通过验证，不执行远端 JS（无 vm 逃逸风险）；支持挑战页下发动态重排表
 - **密码分享** — 支持带密码的分享链接
-- **翻页获取** — 自动翻页取回文件夹内全部文件
+- **翻页获取** — 自动翻页取回文件夹内全部文件，触发频率限制时按次递增退避重试
 - **域名回退** — 分享域名失效时自动切换兜底域名池（`filemoreajax` 是全局接口，任一存活子域均可查询）
-- **直链提取** — 依次尝试 `vkjxld+hyggid` 拼接 / `iframe` / JS 跳转等多种页面结构，兼容站点改版
+- **直链提取** — 新版页面脚本拼接（`vkjxld+hyggid`，多次赋值取末次，可选 `lanosso` 后缀）优先，流式读前 4KB 判别 CDN 加载页并提取跳转；兼容旧版锚点 / `iframe` / JS 跳转结构
 - **时间归一化** — "3 小时前"、"昨天 20:31" 等相对时间统一转为 `YYYY-MM-DD HH:mm`
 - **内置限速** — 相邻请求间隔至少 1 秒，降低触发风控的概率
 - **零异常抛出** — 主 API 永不 throw，失败信息通过返回值传递
@@ -93,29 +93,29 @@ const res = await axios.get(directLink, {
 
 ### `LanzouOptions`
 
-| 字段 | 类型 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `pwd` | `string` | `''` | 分享密码（如有） |
-| `debug` | `boolean` | `false` | 输出进度日志（默认静默） |
-| `timeout` | `number` | `15000` | 单次请求超时（毫秒） |
+| 字段      | 类型      | 默认    | 说明                     |
+| --------- | --------- | ------- | ------------------------ |
+| `pwd`     | `string`  | `''`    | 分享密码（如有）         |
+| `debug`   | `boolean` | `false` | 输出进度日志（默认静默） |
+| `timeout` | `number`  | `15000` | 单次请求超时（毫秒）     |
 
 ### `FileInfo`
 
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| `fileName` | `string` | 文件名 |
-| `fileSize` | `string` | 文件大小（站点原始字符串） |
-| `updateTime` | `string?` | 更新时间 `YYYY-MM-DD HH:mm`（相对时间已换算） |
-| `directLink` | `string \| null` | 下载直链，失败为 `null` |
-| `error` | `string?` | 直链获取失败的原因 |
+| 字段         | 类型             | 说明                                          |
+| ------------ | ---------------- | --------------------------------------------- |
+| `fileName`   | `string`         | 文件名                                        |
+| `fileSize`   | `string`         | 文件大小（站点原始字符串）                    |
+| `updateTime` | `string?`        | 更新时间 `YYYY-MM-DD HH:mm`（相对时间已换算） |
+| `directLink` | `string \| null` | 下载直链，失败为 `null`                       |
+| `error`      | `string?`        | 直链获取失败的原因                            |
 
 ### 其他导出
 
 - `BASE_UA` — 站点校验所用移动端 UA，下载直链时需携带
-- `calcAcwScV2(arg1)` — 本地计算 `acw_sc__v2` WAF 挑战答案
+- `calcAcwScV2(arg1, pos?)` — 本地计算 `acw_sc__v2` WAF 挑战答案（`pos` 为重排表，默认固定表，可传挑战页下发的动态表）
 - `parseSiteTime(raw)` / `absTime(raw)` — 站点时间字符串转时间戳 / 标准格式
 - `resetCookies()` — 清空模块级 Cookie 容器（长驻进程重置 WAF 状态时使用）
-- `CookieJar` / `extractParam` — `@internal`，测试与高级用途
+- `CookieJar` / `extractParam` / `decodeJsString` / `jsVarAssignments` — `@internal`，测试与高级用途
 
 ## 注意事项
 

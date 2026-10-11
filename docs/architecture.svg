@@ -501,13 +501,13 @@ rect.c-bg-rect { fill: var(--bg); }
         <rect x="190" y="200" width="210" height="75" rx="6" class="c-backend" stroke-width="1.5"/>
         <text x="295" y="222" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">getAllFileList</text>
         <text x="295" y="240" class="t-muted" font-size="8" text-anchor="middle">prepareData · extractParam</text>
-        <text x="295" y="256" class="t-muted" font-size="8" text-anchor="middle">翻页 · 单页重试 ×4</text>
+        <text x="295" y="256" class="t-muted" font-size="8" text-anchor="middle">翻页 · 重试×4 · 递增退避</text>
 
         <rect x="420" y="200" width="270" height="75" rx="6" class="c-mask"/>
         <rect x="420" y="200" width="270" height="75" rx="6" class="c-backend" stroke-width="1.5"/>
         <text x="555" y="222" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">getFinalLink</text>
         <text x="555" y="240" class="t-muted" font-size="8" text-anchor="middle">processDownloadPage</text>
-        <text x="555" y="256" class="t-muted" font-size="8" text-anchor="middle">downurl → vkjxld/hyggid → 直链</text>
+        <text x="555" y="256" class="t-muted" font-size="8" text-anchor="middle">脚本拼接 → 加载页判别 → 直链</text>
 
         <!-- HTTP 层 -->
         <rect x="190" y="340" width="500" height="60" rx="6" class="c-mask"/>
@@ -553,8 +553,8 @@ rect.c-bg-rect { fill: var(--bg); }
         <rect x="760" y="315" width="190" height="80" rx="6" class="c-mask"/>
         <rect x="760" y="315" width="190" height="80" rx="6" class="c-cloud" stroke-width="1.5"/>
         <text x="855" y="340" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">文件页 → 跳转页</text>
-        <text x="855" y="358" class="t-muted" font-size="8" text-anchor="middle">downurl</text>
-        <text x="855" y="374" class="t-muted" font-size="8" text-anchor="middle">vkjxld + hyggid</text>
+        <text x="855" y="358" class="t-muted" font-size="8" text-anchor="middle">ddown/downurl · /tp/ 中转页</text>
+        <text x="855" y="374" class="t-muted" font-size="8" text-anchor="middle">vkjxld + hyggid (+lanosso)</text>
 
         <rect x="760" y="435" width="190" height="65" rx="6" class="c-mask"/>
         <rect x="760" y="435" width="190" height="65" rx="6" class="c-security" stroke-width="1.5"/>
